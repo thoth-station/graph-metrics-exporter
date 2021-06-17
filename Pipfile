@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+thoth-storages = "*"
+thoth-common = "*"
+prometheus-client = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-timeout = "*"
+pytest-cov = "*"
+hypothesis-auto = "*"
+hypothesis = "*"
+pytest-mypy = "*"
+mypy = "*"
+pre-commit = "*"
+
+[requires]
+python_version = "3.8"
