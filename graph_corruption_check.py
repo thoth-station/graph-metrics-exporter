@@ -49,9 +49,12 @@ def graph_corruption_check():
     graph.connect()
 
     if graph.is_database_corrupted():
+        _LOGGER.info("Graph database is corrupted!")
         graphdb_is_corrupted.set(1)
     else:
+        _LOGGER.info("Graph database is not corrupted.")
         graphdb_is_corrupted.set(0)
+
     _LOGGER.info("Graph metrics exporter task finished.")
 
     send_metrics()
