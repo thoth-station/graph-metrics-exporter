@@ -48,6 +48,8 @@ THOTH_DEPLOYMENT_NAME = os.environ["THOTH_DEPLOYMENT_NAME"]
 
 GRAPH_METRICS_EXPORTER_TASK = os.environ["THOTH_GRAPH_METRICS_EXPORTER_TASK"]
 
+REGISTERED_TASKS = ["graph_corruption_check"]
+
 init_logging()
 
 database_schema_revision_script = Gauge(
@@ -109,8 +111,14 @@ def main():
     graph = GraphDatabase()
     graph.connect()
 
-    if GRAPH_METRICS_EXPORTER_TASK == "graph_corruption_check":
+    if GRAPH_METRICS_EXPORTER_TASK in REGISTERED_TASKS:
         _graph_corruption_check(graph=graph)
+    else:
+        raise Exception(
+            "%r task is not registered. Use one of the following tasks: %r",
+            GRAPH_METRICS_EXPORTER_TASK,
+            REGISTERED_TASKS,
+        )
 
     _send_metrics()
     _LOGGER.info("Graph metrics exporter task finished.")
