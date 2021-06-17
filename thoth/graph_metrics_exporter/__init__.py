@@ -16,17 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-"""This are tasks for graph metrics exporter."""
+"""These are tasks for graph metrics exporter."""
 
 from thoth.common import init_logging
 from thoth.common import __version__ as __common_version__
 from thoth.storages import __version__ as __storages_version__
 
 __version__ = "0.0.1"
-__service_version__ = (
-    f"{__version__}+"
-    f"common.{__common_version__}.storages.{__storages_version__}"
-)
+__service_version__ = f"{__version__}+" f"common.{__common_version__}.storages.{__storages_version__}"
 
 
 # Init logging here when gunicorn import this application.

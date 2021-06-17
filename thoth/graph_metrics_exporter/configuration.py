@@ -22,6 +22,7 @@ import os
 
 from prometheus_client import CollectorRegistry
 
+
 class Configuration:
     """Configuration for graph-metrics-exporter."""
 

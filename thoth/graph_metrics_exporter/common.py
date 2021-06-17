@@ -45,6 +45,7 @@ def create_common_metrics(component_name: str = Configuration.COMPONENT_NAME):
     else:
         _LOGGER.warning("THOTH_DEPLOYMENT_NAME env variable is not set.")
 
+
 def send_metrics(component_name: str = Configuration.COMPONENT_NAME):
     """Send metrics to pushgateway."""
     pushgateway_url = Configuration.THOTH_METRICS_PUSHGATEWAY_URL

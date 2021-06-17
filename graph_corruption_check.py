@@ -48,7 +48,7 @@ def graph_corruption_check():
     graph = GraphDatabase()
     graph.connect()
 
-    if graph.is_database_corrupted(): 
+    if graph.is_database_corrupted():
         graphdb_is_corrupted.set(1)
     else:
         graphdb_is_corrupted.set(0)
