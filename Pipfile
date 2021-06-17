@@ -9,14 +9,6 @@ thoth-common = "*"
 prometheus-client = "*"
 
 [dev-packages]
-pytest = "*"
-pytest-timeout = "*"
-pytest-cov = "*"
-hypothesis-auto = "*"
-hypothesis = "*"
-pytest-mypy = "*"
-mypy = "*"
-pre-commit = "*"
 
 [requires]
 python_version = "3.8"
