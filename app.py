@@ -49,6 +49,7 @@ class TaskEnum(Enum):
 
     CORRUPTION_CHECK = "graph_corruption_check"
 
+
 init_logging()
 
 database_schema_revision_script = Gauge(
@@ -97,14 +98,7 @@ def _graph_corruption_check(graph: GraphDatabase):
 
 @click.command()
 @click.option(
-    "--task",
-    "-t",
-    type=str,
-    required=True,
-    help="""Long running task to be performed against database.
-            Current tasks available are:
-            """
-    + ",\n".join([entity.value for entity in TaskEnum])
+    "--task", "-t", type=click.Choice([entity.value for entity in TaskEnum], case_sensitive=False), required=True
 )
 def main(task):
     """Run log running task on the database for graph metrics exporter."""
@@ -125,4 +119,4 @@ def main(task):
 
 if __name__ == "__main__":
     _LOGGER.info("graph-metrics-exporter  v%s starting...", __service_version__)
-    main(auto_envvar_prefix='THOTH_GRAPH_METRICS_EXPORTER')
+    main(auto_envvar_prefix="THOTH_GRAPH_METRICS_EXPORTER")
