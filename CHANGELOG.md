@@ -5,3 +5,21 @@
 ### Added
 
 all the things that you see...
+
+## Release 0.1.0 (2021-06-18T09:38:18)
+### Features
+* mypy happy
+* :arrow_up: Automatic update of dependencies by Kebechet
+* refactor and add click
+* Condense logic
+* update README
+* Add logs
+* adjust-ci
+* Make pre-commit happy
+* Introduce first task of cronworkflow
+* Introduce dependencies
+### Improvements
+* Move log to show task running
+* use click.options
+### Non-functional
+* improve error logic
