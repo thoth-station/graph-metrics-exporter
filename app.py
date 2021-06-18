@@ -20,6 +20,9 @@
 import os
 import logging
 
+import click
+from enum import Enum
+
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 
 from thoth.common import init_logging
@@ -29,26 +32,22 @@ from thoth.common import __version__ as __common_version__
 
 
 __version__ = "0.0.1"
-__service_version__ = f"{__version__}+" f"common.{__common_version__}.storages.{__storages_version__}"
+__service_version__ = f"{__version__}+common.{__common_version__}.storages.{__storages_version__}"
 
 _LOGGER = logging.getLogger("thoth.graph_metrics_exporter")
 
 COMPONENT_NAME = "graph-metrics-exporter"
-
-# database
-KNOWLEDGE_GRAPH_HOST = os.getenv("KNOWLEDGE_GRAPH_HOST", "localhost")
-KNOWLEDGE_GRAPH_PORT = os.getenv("KNOWLEDGE_GRAPH_PORT", "5432")
-KNOWLEDGE_GRAPH_USER = os.getenv("KNOWLEDGE_GRAPH_USER", "postgres")
-KNOWLEDGE_GRAPH_DATABASE = os.getenv("KNOWLEDGE_GRAPH_DATABASE", "postgres")
 
 # metrics
 PROMETHEUS_REGISTRY = CollectorRegistry()
 THOTH_METRICS_PUSHGATEWAY_URL = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 THOTH_DEPLOYMENT_NAME = os.environ["THOTH_DEPLOYMENT_NAME"]
 
-GRAPH_METRICS_EXPORTER_TASK = os.environ["THOTH_GRAPH_METRICS_EXPORTER_TASK"]
 
-REGISTERED_TASKS = ["graph_corruption_check"]
+class TaskEnum(Enum):
+    """Class for the task to be run."""
+
+    CORRUPTION_CHECK = "graph_corruption_check"
 
 init_logging()
 
@@ -67,26 +66,20 @@ graphdb_is_corrupted = Gauge(
 )
 
 
-def _create_common_metrics(component_name: str = COMPONENT_NAME):
+def _create_common_metrics():
     """Create common metrics to pushgateway."""
-    deployment_name = THOTH_DEPLOYMENT_NAME
-
-    if deployment_name:
-        database_schema_revision_script.labels(
-            component_name, GraphDatabase().get_script_alembic_version_head(), deployment_name
-        ).inc()
-    else:
-        _LOGGER.warning("THOTH_DEPLOYMENT_NAME env variable is not set.")
+    database_schema_revision_script.labels(
+        COMPONENT_NAME, GraphDatabase().get_script_alembic_version_head(), THOTH_DEPLOYMENT_NAME
+    ).inc()
 
 
-def _send_metrics(component_name: str = COMPONENT_NAME):
+def _send_metrics():
     """Send metrics to pushgateway."""
-    pushgateway_url = THOTH_METRICS_PUSHGATEWAY_URL
     try:
-        _LOGGER.debug(f"Submitting metrics to Prometheus pushgateway {pushgateway_url}")
+        _LOGGER.debug(f"Submitting metrics to Prometheus pushgateway {THOTH_METRICS_PUSHGATEWAY_URL}")
         push_to_gateway(
-            pushgateway_url,
-            job=component_name,
+            THOTH_METRICS_PUSHGATEWAY_URL,
+            job=COMPONENT_NAME,
             registry=PROMETHEUS_REGISTRY,
         )
     except Exception as e:
@@ -102,8 +95,19 @@ def _graph_corruption_check(graph: GraphDatabase):
         graphdb_is_corrupted.set(0)
 
 
-def main():
-    """Perform graph metrics exporter job."""
+@click.command()
+@click.option(
+    "--task",
+    "-t",
+    type=str,
+    required=True,
+    help="""Long running task to be performed against database.
+            Current tasks available are:
+            """
+    + ",\n".join([entity.value for entity in TaskEnum])
+)
+def main(task):
+    """Run log running task on the database for graph metrics exporter."""
     _LOGGER.debug("Debug mode is on.")
 
     _create_common_metrics()
@@ -111,19 +115,14 @@ def main():
     graph = GraphDatabase()
     graph.connect()
 
-    if GRAPH_METRICS_EXPORTER_TASK in REGISTERED_TASKS:
+    if task == TaskEnum.CORRUPTION_CHECK.value:
+        _LOGGER.info("Graph corruption check started...")
         _graph_corruption_check(graph=graph)
-    else:
-        raise Exception(
-            "%r task is not registered. Use one of the following tasks: %r",
-            GRAPH_METRICS_EXPORTER_TASK,
-            REGISTERED_TASKS,
-        )
 
     _send_metrics()
-    _LOGGER.info("Graph metrics exporter task finished.")
+    _LOGGER.info("Graph metrics exporter finished.")
 
 
 if __name__ == "__main__":
     _LOGGER.info("graph-metrics-exporter  v%s starting...", __service_version__)
-    main()
+    main(auto_envvar_prefix='THOTH_GRAPH_METRICS_EXPORTER')
