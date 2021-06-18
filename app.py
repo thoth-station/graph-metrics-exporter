@@ -109,8 +109,9 @@ def main(task):
     graph = GraphDatabase()
     graph.connect()
 
+    _LOGGER.info(f"{task} task started...")
+
     if task == TaskEnum.CORRUPTION_CHECK.value:
-        _LOGGER.info("Graph corruption check started...")
         _graph_corruption_check(graph=graph)
 
     _send_metrics()
