@@ -23,3 +23,9 @@ all the things that you see...
 * use click.options
 ### Non-functional
 * improve error logic
+
+## Release 0.2.0 (2021-06-18T13:00:10)
+### Features
+* Add Task table bloat data check
+### Improvements
+* make pre-commit happy
