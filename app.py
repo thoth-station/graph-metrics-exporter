@@ -50,6 +50,7 @@ class TaskEnum(Enum):
     CORRUPTION_CHECK = "graph_corruption_check"
     TABLE_BLOAT_DATA = "graph_table_bloat_data_check"
 
+
 init_logging()
 
 database_schema_revision_script = Gauge(
@@ -73,6 +74,7 @@ graphdb_pct_bloat_data_table = Gauge(
 graphdb_mb_bloat_data_table = Gauge(
     "thoth_graphdb_mb_bloat_data_table", "Bloat data (mb_bloat) per table in Thoth Knowledge Graph.", ["table_name"]
 )
+
 
 def _create_common_metrics():
     """Create common metrics to pushgateway."""
@@ -109,9 +111,7 @@ def _graph_table_bloat_data(graph: GraphDatabase):
     if bloat_data:
         for table_data in bloat_data:
             graphdb_pct_bloat_data_table.labels(table_data["tablename"]).set(table_data["pct_bloat"])
-            _LOGGER.info(
-                "thoth_graphdb_pct_bloat_data_table(%r)=%r", table_data["tablename"], table_data["pct_bloat"]
-            )
+            _LOGGER.info("thoth_graphdb_pct_bloat_data_table(%r)=%r", table_data["tablename"], table_data["pct_bloat"])
 
             graphdb_mb_bloat_data_table.labels(table_data["tablename"]).set(table_data["mb_bloat"])
             _LOGGER.info("thoth_graphdb_mb_bloat_data_table(%r)=%r", table_data["tablename"], 0)
