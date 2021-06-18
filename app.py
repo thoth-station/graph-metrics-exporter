@@ -48,7 +48,7 @@ class TaskEnum(Enum):
     """Class for the task to be run."""
 
     CORRUPTION_CHECK = "graph_corruption_check"
-
+    TABLE_BLOAT_DATA = "graph_table_bloat_data_check"
 
 init_logging()
 
@@ -66,6 +66,13 @@ graphdb_is_corrupted = Gauge(
     registry=PROMETHEUS_REGISTRY,
 )
 
+graphdb_pct_bloat_data_table = Gauge(
+    "thoth_graphdb_pct_bloat_data_table", "Bloat data (pct_bloat) per table in Thoth Knowledge Graph.", ["table_name"]
+)
+
+graphdb_mb_bloat_data_table = Gauge(
+    "thoth_graphdb_mb_bloat_data_table", "Bloat data (mb_bloat) per table in Thoth Knowledge Graph.", ["table_name"]
+)
 
 def _create_common_metrics():
     """Create common metrics to pushgateway."""
@@ -96,6 +103,26 @@ def _graph_corruption_check(graph: GraphDatabase):
         graphdb_is_corrupted.set(0)
 
 
+def _graph_table_bloat_data(graph: GraphDatabase):
+    bloat_data = graph.get_bloat_data()
+
+    if bloat_data:
+        for table_data in bloat_data:
+            graphdb_pct_bloat_data_table.labels(table_data["tablename"]).set(table_data["pct_bloat"])
+            _LOGGER.info(
+                "thoth_graphdb_pct_bloat_data_table(%r)=%r", table_data["tablename"], table_data["pct_bloat"]
+            )
+
+            graphdb_mb_bloat_data_table.labels(table_data["tablename"]).set(table_data["mb_bloat"])
+            _LOGGER.info("thoth_graphdb_mb_bloat_data_table(%r)=%r", table_data["tablename"], 0)
+    else:
+        graphdb_pct_bloat_data_table.labels("No table pct").set(0)
+        _LOGGER.info("thoth_graphdb_pct_bloat_data_table is empty")
+
+        graphdb_mb_bloat_data_table.labels("No table mb").set(0)
+        _LOGGER.info("thoth_graphdb_mb_bloat_data_table is empty")
+
+
 @click.command()
 @click.option(
     "--task", "-t", type=click.Choice([entity.value for entity in TaskEnum], case_sensitive=False), required=True
@@ -109,10 +136,13 @@ def main(task):
     graph = GraphDatabase()
     graph.connect()
 
-    _LOGGER.info(f"{task} task started...")
+    _LOGGER.info(f"{task} task starting...")
 
     if task == TaskEnum.CORRUPTION_CHECK.value:
         _graph_corruption_check(graph=graph)
+
+    if task == TaskEnum.TABLE_BLOAT_DATA.value:
+        _graph_table_bloat_data(graph=graph)
 
     _send_metrics()
     _LOGGER.info("Graph metrics exporter finished.")
