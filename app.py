@@ -49,6 +49,7 @@ class TaskEnum(Enum):
 
     CORRUPTION_CHECK = "graph_corruption_check"
     TABLE_BLOAT_DATA = "graph_table_bloat_data_check"
+    INDEX_BLOAT_DATA = "graph_index_bloat_data_check"
 
 
 init_logging()
@@ -73,6 +74,18 @@ graphdb_pct_bloat_data_table = Gauge(
 
 graphdb_mb_bloat_data_table = Gauge(
     "thoth_graphdb_mb_bloat_data_table", "Bloat data (mb_bloat) per table in Thoth Knowledge Graph.", ["table_name"]
+)
+
+graphdb_pct_index_bloat_data_table = Gauge(
+    "thoth_graphdb_pct_index_bloat_data_table",
+    "Index Bloat data (bloat_pct) per table in Thoth Knowledge Graph.",
+    ["table_name", "index_name"],
+)
+
+graphdb_mb_index_bloat_data_table = Gauge(
+    "thoth_graphdb_mb_index_bloat_data_table",
+    "Index Bloat data (bloat_mb) per table in Thoth Knowledge Graph.",
+    ["table_name", "index_name"],
 )
 
 
@@ -114,13 +127,45 @@ def _graph_table_bloat_data(graph: GraphDatabase):
             _LOGGER.info("thoth_graphdb_pct_bloat_data_table(%r)=%r", table_data["tablename"], table_data["pct_bloat"])
 
             graphdb_mb_bloat_data_table.labels(table_data["tablename"]).set(table_data["mb_bloat"])
-            _LOGGER.info("thoth_graphdb_mb_bloat_data_table(%r)=%r", table_data["tablename"], 0)
+            _LOGGER.info("thoth_graphdb_mb_bloat_data_table(%r)=%r", table_data["tablename"], table_data["mb_bloat"])
     else:
         graphdb_pct_bloat_data_table.labels("No table pct").set(0)
         _LOGGER.info("thoth_graphdb_pct_bloat_data_table is empty")
 
         graphdb_mb_bloat_data_table.labels("No table mb").set(0)
         _LOGGER.info("thoth_graphdb_mb_bloat_data_table is empty")
+
+
+def _graph_index_bloat_data(graph: GraphDatabase):
+    index_bloat_data = graph.get_index_bloat_data()
+
+    if index_bloat_data:
+        for table_data in index_bloat_data:
+            graphdb_pct_index_bloat_data_table.labels(table_data["table_name"], table_data["index_name"]).set(
+                table_data["bloat_pct"]
+            )
+            _LOGGER.info(
+                "thoth_graphdb_pct_index_bloat_data_table(%r, %r)=%r",
+                table_data["table_name"],
+                table_data["index_name"],
+                table_data["bloat_pct"],
+            )
+
+            graphdb_mb_index_bloat_data_table.labels(table_data["table_name"], table_data["index_name"]).set(
+                table_data["bloat_mb"]
+            )
+            _LOGGER.info(
+                "thoth_graphdb_mb_index_bloat_data_table(%r, %r)=%r",
+                table_data["table_name"],
+                table_data["index_name"],
+                table_data["bloat_mb"],
+            )
+    else:
+        graphdb_pct_bloat_data_table.labels("No table pct").set(0)
+        _LOGGER.info("thoth_graphdb_pct_index_bloat_data_table is empty")
+
+        graphdb_mb_bloat_data_table.labels("No table mb").set(0)
+        _LOGGER.info("thoth_graphdb_mb_index_bloat_data_table is empty")
 
 
 @click.command()
@@ -146,6 +191,9 @@ def main(task):
 
     if task == TaskEnum.TABLE_BLOAT_DATA.value or not task:
         _graph_table_bloat_data(graph=graph)
+
+    if task == TaskEnum.INDEX_BLOAT_DATA.value or not task:
+        _graph_index_bloat_data(graph=graph)
 
     _send_metrics()
     _LOGGER.info("Graph metrics exporter finished.")
