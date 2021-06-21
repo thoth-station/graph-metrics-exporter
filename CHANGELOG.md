@@ -33,3 +33,7 @@ all the things that you see...
 ## Release 0.3.0 (2021-06-21T08:07:04)
 ### Features
 * Relax inputs for cronjob
+
+## Release 0.4.0 (2021-06-21T13:07:58)
+### Improvements
+* Introduce task for index bloat data
