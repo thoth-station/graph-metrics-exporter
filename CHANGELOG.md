@@ -29,3 +29,7 @@ all the things that you see...
 * Add Task table bloat data check
 ### Improvements
 * make pre-commit happy
+
+## Release 0.3.0 (2021-06-21T08:07:04)
+### Features
+* Relax inputs for cronjob
