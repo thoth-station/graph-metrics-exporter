@@ -69,23 +69,31 @@ graphdb_is_corrupted = Gauge(
 )
 
 graphdb_pct_bloat_data_table = Gauge(
-    "thoth_graphdb_pct_bloat_data_table", "Bloat data (pct_bloat) per table in Thoth Knowledge Graph.", ["table_name"]
+    "thoth_graphdb_pct_bloat_data_table",
+    "Bloat data (pct_bloat) per table in Thoth Knowledge Graph.",
+    ["table_name"],
+    registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_mb_bloat_data_table = Gauge(
-    "thoth_graphdb_mb_bloat_data_table", "Bloat data (mb_bloat) per table in Thoth Knowledge Graph.", ["table_name"]
+    "thoth_graphdb_mb_bloat_data_table",
+    "Bloat data (mb_bloat) per table in Thoth Knowledge Graph.",
+    ["table_name"],
+    registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_pct_index_bloat_data_table = Gauge(
     "thoth_graphdb_pct_index_bloat_data_table",
     "Index Bloat data (bloat_pct) per table in Thoth Knowledge Graph.",
     ["table_name", "index_name"],
+    registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_mb_index_bloat_data_table = Gauge(
     "thoth_graphdb_mb_index_bloat_data_table",
     "Index Bloat data (bloat_mb) per table in Thoth Knowledge Graph.",
     ["table_name", "index_name"],
+    registry=PROMETHEUS_REGISTRY,
 )
 
 
