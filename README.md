@@ -1,3 +1,3 @@
 # graph-metrics-exporter
 
-Argo Cronworkflow with different tasks to expose metrics on Thoth Database that require long time.
+Periodic job that exports metrics out of the main database asynchronously.

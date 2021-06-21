@@ -125,7 +125,7 @@ def _graph_table_bloat_data(graph: GraphDatabase):
 
 @click.command()
 @click.option(
-    "--task", "-t", type=click.Choice([entity.value for entity in TaskEnum], case_sensitive=False), required=True
+    "--task", "-t", type=click.Choice([entity.value for entity in TaskEnum], case_sensitive=False), required=False
 )
 def main(task):
     """Run log running task on the database for graph metrics exporter."""
@@ -136,12 +136,15 @@ def main(task):
     graph = GraphDatabase()
     graph.connect()
 
-    _LOGGER.info(f"{task} task starting...")
+    if task:
+        _LOGGER.info(f"{task} task starting...")
+    else:
+        _LOGGER.info("No specific task selected, all tasks will be run...")
 
-    if task == TaskEnum.CORRUPTION_CHECK.value:
+    if task == TaskEnum.CORRUPTION_CHECK.value or not task:
         _graph_corruption_check(graph=graph)
 
-    if task == TaskEnum.TABLE_BLOAT_DATA.value:
+    if task == TaskEnum.TABLE_BLOAT_DATA.value or not task:
         _graph_table_bloat_data(graph=graph)
 
     _send_metrics()
