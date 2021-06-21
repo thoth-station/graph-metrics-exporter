@@ -37,3 +37,7 @@ all the things that you see...
 ## Release 0.4.0 (2021-06-21T13:07:58)
 ### Improvements
 * Introduce task for index bloat data
+
+## Release 0.4.1 (2021-06-21T13:42:19)
+### Features
+* Add registry for new metrics
