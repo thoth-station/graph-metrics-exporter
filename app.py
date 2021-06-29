@@ -120,10 +120,10 @@ def _send_metrics():
 def _graph_corruption_check(graph: GraphDatabase):
     if graph.is_database_corrupted():
         _LOGGER.info("Graph database is corrupted!")
-        graphdb_is_corrupted(THOTH_DEPLOYMENT_NAME).set(1)
+        graphdb_is_corrupted.labels(THOTH_DEPLOYMENT_NAME).set(1)
     else:
         _LOGGER.info("Graph database is not corrupted.")
-        graphdb_is_corrupted(THOTH_DEPLOYMENT_NAME).set(0)
+        graphdb_is_corrupted.labels(THOTH_DEPLOYMENT_NAME).set(0)
 
 
 def _graph_table_bloat_data(graph: GraphDatabase):
