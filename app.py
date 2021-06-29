@@ -64,35 +64,35 @@ database_schema_revision_script = Gauge(
 graphdb_is_corrupted = Gauge(
     "thoth_graphdb_is_corrupted",
     "amcheck has detected corruption.",
-    [],
+    ["env"],
     registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_pct_bloat_data_table = Gauge(
     "thoth_graphdb_pct_bloat_data_table",
     "Bloat data (pct_bloat) per table in Thoth Knowledge Graph.",
-    ["table_name"],
+    ["table_name", "env"],
     registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_mb_bloat_data_table = Gauge(
     "thoth_graphdb_mb_bloat_data_table",
     "Bloat data (mb_bloat) per table in Thoth Knowledge Graph.",
-    ["table_name"],
+    ["table_name", "env"],
     registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_pct_index_bloat_data_table = Gauge(
     "thoth_graphdb_pct_index_bloat_data_table",
     "Index Bloat data (bloat_pct) per table in Thoth Knowledge Graph.",
-    ["table_name", "index_name"],
+    ["table_name", "index_name", "env"],
     registry=PROMETHEUS_REGISTRY,
 )
 
 graphdb_mb_index_bloat_data_table = Gauge(
     "thoth_graphdb_mb_index_bloat_data_table",
     "Index Bloat data (bloat_mb) per table in Thoth Knowledge Graph.",
-    ["table_name", "index_name"],
+    ["table_name", "index_name", "env"],
     registry=PROMETHEUS_REGISTRY,
 )
 
@@ -120,10 +120,10 @@ def _send_metrics():
 def _graph_corruption_check(graph: GraphDatabase):
     if graph.is_database_corrupted():
         _LOGGER.info("Graph database is corrupted!")
-        graphdb_is_corrupted.set(1)
+        graphdb_is_corrupted(THOTH_DEPLOYMENT_NAME).set(1)
     else:
         _LOGGER.info("Graph database is not corrupted.")
-        graphdb_is_corrupted.set(0)
+        graphdb_is_corrupted(THOTH_DEPLOYMENT_NAME).set(0)
 
 
 def _graph_table_bloat_data(graph: GraphDatabase):
@@ -131,16 +131,30 @@ def _graph_table_bloat_data(graph: GraphDatabase):
 
     if bloat_data:
         for table_data in bloat_data:
-            graphdb_pct_bloat_data_table.labels(table_data["tablename"]).set(table_data["pct_bloat"])
-            _LOGGER.info("thoth_graphdb_pct_bloat_data_table(%r)=%r", table_data["tablename"], table_data["pct_bloat"])
+            graphdb_pct_bloat_data_table.labels(table_data["tablename"], THOTH_DEPLOYMENT_NAME).set(
+                table_data["pct_bloat"]
+            )
+            _LOGGER.info(
+                "thoth_graphdb_pct_bloat_data_table(%r, %r)=%r",
+                table_data["tablename"],
+                THOTH_DEPLOYMENT_NAME,
+                table_data["pct_bloat"],
+            )
 
-            graphdb_mb_bloat_data_table.labels(table_data["tablename"]).set(table_data["mb_bloat"])
-            _LOGGER.info("thoth_graphdb_mb_bloat_data_table(%r)=%r", table_data["tablename"], table_data["mb_bloat"])
+            graphdb_mb_bloat_data_table.labels(table_data["tablename"], THOTH_DEPLOYMENT_NAME).set(
+                table_data["mb_bloat"]
+            )
+            _LOGGER.info(
+                "thoth_graphdb_mb_bloat_data_table(%r, %r)=%r",
+                table_data["tablename"],
+                THOTH_DEPLOYMENT_NAME,
+                table_data["mb_bloat"],
+            )
     else:
-        graphdb_pct_bloat_data_table.labels("No table pct").set(0)
+        graphdb_pct_bloat_data_table.labels("No table pct", THOTH_DEPLOYMENT_NAME).set(0)
         _LOGGER.info("thoth_graphdb_pct_bloat_data_table is empty")
 
-        graphdb_mb_bloat_data_table.labels("No table mb").set(0)
+        graphdb_mb_bloat_data_table.labels("No table mb", THOTH_DEPLOYMENT_NAME).set(0)
         _LOGGER.info("thoth_graphdb_mb_bloat_data_table is empty")
 
 
@@ -149,30 +163,32 @@ def _graph_index_bloat_data(graph: GraphDatabase):
 
     if index_bloat_data:
         for table_data in index_bloat_data:
-            graphdb_pct_index_bloat_data_table.labels(table_data["table_name"], table_data["index_name"]).set(
-                table_data["bloat_pct"]
-            )
+            graphdb_pct_index_bloat_data_table.labels(
+                table_data["table_name"], table_data["index_name"], THOTH_DEPLOYMENT_NAME
+            ).set(table_data["bloat_pct"])
             _LOGGER.info(
-                "thoth_graphdb_pct_index_bloat_data_table(%r, %r)=%r",
+                "thoth_graphdb_pct_index_bloat_data_table(%r, %r, %r)=%r",
                 table_data["table_name"],
                 table_data["index_name"],
+                THOTH_DEPLOYMENT_NAME,
                 table_data["bloat_pct"],
             )
 
-            graphdb_mb_index_bloat_data_table.labels(table_data["table_name"], table_data["index_name"]).set(
-                table_data["bloat_mb"]
-            )
+            graphdb_mb_index_bloat_data_table.labels(
+                table_data["table_name"], table_data["index_name"], THOTH_DEPLOYMENT_NAME
+            ).set(table_data["bloat_mb"])
             _LOGGER.info(
-                "thoth_graphdb_mb_index_bloat_data_table(%r, %r)=%r",
+                "thoth_graphdb_mb_index_bloat_data_table(%r, %r, %r)=%r",
                 table_data["table_name"],
                 table_data["index_name"],
+                THOTH_DEPLOYMENT_NAME,
                 table_data["bloat_mb"],
             )
     else:
-        graphdb_pct_bloat_data_table.labels("No table pct").set(0)
+        graphdb_pct_index_bloat_data_table.labels("No table pct", THOTH_DEPLOYMENT_NAME).set(0)
         _LOGGER.info("thoth_graphdb_pct_index_bloat_data_table is empty")
 
-        graphdb_mb_bloat_data_table.labels("No table mb").set(0)
+        graphdb_mb_index_bloat_data_table.labels("No table mb", THOTH_DEPLOYMENT_NAME).set(0)
         _LOGGER.info("thoth_graphdb_mb_index_bloat_data_table is empty")
 
 
