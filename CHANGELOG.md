@@ -41,3 +41,7 @@ all the things that you see...
 ## Release 0.4.1 (2021-06-21T13:42:19)
 ### Features
 * Add registry for new metrics
+
+## Release 0.5.0 (2021-06-29T07:36:22)
+### Features
+* Add environment label
