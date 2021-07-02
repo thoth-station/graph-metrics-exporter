@@ -49,3 +49,10 @@ all the things that you see...
 ## Release 0.5.1 (2021-06-29T08:14:21)
 ### Features
 * Add missed commit for labels
+
+## Release 0.5.2 (2021-07-02T09:34:18)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
+* kebechet issue templates for ease trigger
