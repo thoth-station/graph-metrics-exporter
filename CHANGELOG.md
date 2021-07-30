@@ -56,3 +56,7 @@ all the things that you see...
 * :arrow_up: Automatic update of dependencies by Kebechet
 * :arrow_up: Automatic update of dependencies by Kebechet
 * kebechet issue templates for ease trigger
+
+## Release 0.5.3 (2021-07-30T10:24:50)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet (#40)
