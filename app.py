@@ -295,7 +295,7 @@ def main(task):
     if task == TaskEnum.DATABASE_DUMPS.value or not task:
         _graph_database_dumps(adapter=adapter)
 
-    # _send_metrics()
+    _send_metrics()
     _LOGGER.info("Graph metrics exporter finished.")
 
 
