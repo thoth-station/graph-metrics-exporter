@@ -227,7 +227,7 @@ def _graph_index_bloat_data(graph: GraphDatabase):
         _LOGGER.info("thoth_graphdb_mb_index_bloat_data_table is empty")
 
 
-def _graph_database_dumps(adapter: GraphBackupStore):
+def _graph_database_dumps(adapter: GraphBackupStore) -> None:
     pg_dumps = []
     for pg_dump in adapter.get_document_listing():
         pg_dumps.append(
