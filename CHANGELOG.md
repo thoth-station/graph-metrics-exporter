@@ -1,5 +1,15 @@
 # Changelog for Thoth's Template GitHub Project
 
+## Release 0.6.0 (2022-02-08T14:22:54)
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* Update app.py
+* Update app.py
+* remove comments
+* adjust pre-commit
+* update README
+* Add metrics for pg dumps
+* :medal_sports: point the tags badges to github tags
+
 ## Release 0.5.8 (2022-01-31T21:52:41)
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
 
