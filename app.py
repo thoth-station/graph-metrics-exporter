@@ -250,7 +250,7 @@ def _graph_database_dumps(adapter: GraphBackupStore) -> None:
     last_dump_date = max(pg_dumps)
 
     _LOGGER.info(f"Last database dump was stored on: {last_dump_date}")
-    graphdb_last_dump.labels(THOTH_DEPLOYMENT_NAME, last_dump_date).inc()
+    graphdb_last_dump.labels(date=last_dump_date, env=THOTH_DEPLOYMENT_NAME).inc()
 
     last_expected_dump_date = datetime.utcnow().date() - timedelta(days=GRAPH_BACKUP_CHECK_DATE)
 
