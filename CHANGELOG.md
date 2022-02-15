@@ -1,5 +1,8 @@
 # Changelog for Thoth's Template GitHub Project
 
+## Release 0.6.1 (2022-02-15T08:56:07)
+* Fix labels order
+
 ## Release 0.6.0 (2022-02-08T14:22:54)
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
 * Update app.py
