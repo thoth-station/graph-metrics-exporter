@@ -31,7 +31,7 @@ from thoth.storages import __version__ as __storages_version__
 from thoth.common import __version__ as __common_version__
 
 
-__version__ = "0.6.2"
+__version__ = "0.6.3"
 __service_version__ = f"{__version__}+common.{__common_version__}.storages.{__storages_version__}"
 
 _LOGGER = logging.getLogger("thoth.graph_metrics_exporter")
